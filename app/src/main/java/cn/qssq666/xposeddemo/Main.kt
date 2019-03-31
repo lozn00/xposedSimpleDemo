@@ -21,20 +21,33 @@ class Main : IXposedHookLoadPackage, IXposedHookZygoteInit {
      override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam?) {
 //        lpparam.classLoader
         //    public final void setText(CharSequence text)
-        XposedHelpers.findAndHookMethod(TextView::class.java, "setText", CharSequence::class.java, object : XC_MethodHook() {
+        //    private void setTextInternal(@Nullable CharSequence text) {
+        Log.w(TAG,"handleLoadPackage_"+lpparam!!.packageName+",progressName:"+lpparam!!.processName)
+        /*
+            private void setText(CharSequence text, BufferType type,
+                         boolean notifyBefore, int oldlen) {
+         */
+        /*
+               val a = Boolean::class.javaPrimitiveType
+        val b = Int::class.javaPrimitiveType
+         */
+        XposedHelpers.findAndHookMethod(TextView::class.java, "setText", CharSequence::class.java, TextView.BufferType::class.java,Boolean::class.javaPrimitiveType,Int::class.javaPrimitiveType,object : XC_MethodHook() {
+
             @Throws(Throwable::class)
             override fun afterHookedMethod(param: MethodHookParam?) {
                 super.afterHookedMethod(param)
                 //          param!!.args[0] = "_" as CharSequence
-                param!!.args[0] = "" as CharSequence
             }
 
             @Throws(Throwable::class)
             override fun beforeHookedMethod(param: MethodHookParam?) {
                 super.beforeHookedMethod(param)
+                Log.w(TAG,"setText:"+param!!.args[0]+" replace "+"_");
+                param!!.args[0] = "_" as CharSequence
             }
 
         });
+
     }
 
 }
